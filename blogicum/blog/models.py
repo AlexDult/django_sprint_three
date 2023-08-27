@@ -6,14 +6,14 @@ User = get_user_model()
 
 
 class Category (models.Model):
-    title = models.CharField('Название', max_length=256)
+    title = models.CharField('Заголовок', max_length=256)
     description = models.TextField('Описание')
     slug = models.SlugField('Идентификатор', unique=True, help_text='Идентификатор страницы для URL; '
                                                                     'разрешены символы латиницы, '
                                                                     'цифры, дефис и подчёркивание.')
     is_published = models.BooleanField('Опубликовано', default=True,  help_text='Снимите галочку, '
                                                                                 'чтобы скрыть публикацию.')
-    created_at = models.DateTimeField('Добавлено', auto_now=True)
+    created_at = models.DateTimeField('Добавлено', auto_now_add=True)
 
     class Meta:
         verbose_name = 'категория'
@@ -27,7 +27,7 @@ class Location (models.Model):
     name = models.CharField('Название места', max_length=256)
     is_published = models.BooleanField('Опубликовано', default=True,  help_text='Снимите галочку, '
                                                                                 'чтобы скрыть публикацию.')
-    created_at = models.DateTimeField('Добавлено', auto_now=True)
+    created_at = models.DateTimeField('Добавлено', auto_now_add=True)
 
     class Meta:
         verbose_name = 'местоположение'
@@ -58,7 +58,7 @@ class Post (models.Model):
     )
     is_published = models.BooleanField('Опубликовано', default=True,  help_text='Снимите галочку, '
                                                                                 'чтобы скрыть публикацию.')
-    created_at = models.DateTimeField('Добавлено', auto_now=True)
+    created_at = models.DateTimeField('Добавлено', auto_now_add=True)
 
     class Meta:
         verbose_name = 'публикация'

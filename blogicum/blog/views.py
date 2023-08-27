@@ -8,7 +8,7 @@ from datetime import datetime
 def index(request):
     template_name = 'blog/index.html'
     post_list = Post.objects.filter(
-        pub_date__date=datetime.now().date(), #два нижних подчеркивания здесь позволяет обратиться к конкретной дате
+        pub_date__lte=datetime.now().date(),
         is_published=True,
         category__is_published=True).order_by('-pub_date')[:5] #два нижних подчеркивания означает "перейди по внешнему
     # ключу к полю is_published
@@ -42,7 +42,9 @@ def post_detail(request, post_id):
     # found_post = get_object_or_404(Post, slug=post_slug)
 
     try:
-        found_post = Post.objects.get(id=post_id)
+        post = Post.objects.get(id=post_id, pub_date__lte=datetime.now().date(),
+                                is_published=True,
+                                category__is_published=True)
     except Post.DoesNotExist:
         raise Http404()
 
@@ -52,15 +54,43 @@ def post_detail(request, post_id):
     # context = {
     #     'post_list_1': post_list_1,
     # }
-    context = {'post': found_post}
+    context = {'post': post}
     return render(request, template_name, context)
 
 
-def category_posts(request):
+def category_posts(request, category_slug):
+
+    # post_list = Category.objects.values('title', 'description').filter(slug=category_slug,
+    #                                                                     is_published=True,
+    #                                                                     created_at__lte=datetime.now().date()),
+    try:
+        category = Category.objects.get(slug=category_slug, is_published=True)
+    except Category.DoesNotExist:
+        raise Http404()
+    # query category from db by category_slug
+
+    # if category does not exist
+    #    raise 404
+
+    # query category's posts from db
+    posts = Post.objects.filter(category=category, is_published=True, pub_date__lte=datetime.now().date())
+    # pass them to context
+
+    #try:
+    #post_list = Post.objects.filter(   # метод не filter не генерирует исключения Post.DoesNotExist
+    #    pub_date__lte=datetime.now().date(),
+    #    is_published=True,
+    #    category__is_published=True,
+    #    category__slug=category_slug)
+    #except Post.DoesNotExist:
+
+    #if not post_list:
+    #    raise Http404()
+
     template_name = 'blog/category.html'
-    post_list_2 = Category.objects.values('title', 'description')
     context = {
-        'post_list_2': post_list_2,
+        'category': category,
+        'post_list': posts,
     }
     return render(request, template_name, context)
 
